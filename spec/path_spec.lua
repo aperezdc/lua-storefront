@@ -71,10 +71,12 @@ describe("storefront.path", function ()
             P "a_b/c_d",
          },
       }
-      for expected, option_paths in pairs(items) do
-         for _, option_path in ipairs(option_paths) do
-            assert.message("path: " .. table.concat(option_path, ", "))
-               .equal(expected, tostring(option_path))
+      for expected, paths in pairs(items) do
+         for _, path in ipairs(paths) do
+            assert.message("path <" .. table.concat(path, "/") .. ">")
+               .equal(expected, path.string)
+            assert.message("path <" .. table.concat(path, "/") .. ">")
+               .equal(expected, tostring(path))
          end
       end
    end)
