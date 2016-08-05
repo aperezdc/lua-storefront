@@ -84,7 +84,6 @@ describe("storefront.path", function ()
       assert.equal(P "a.b.c.d", P "a.b.c.d")
       assert.equal(P { "a", "b" }, P "a/b")
       assert.equal(P "a/b", P { "a", "b" })
-      assert.equal(P "a/b", {"a", "b"})
       assert.not_equal(P "a/b", P "c/d")
    end)
 
