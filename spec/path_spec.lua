@@ -89,6 +89,41 @@ describe("storefront.path", function ()
       assert.not_equal(P "a/b", P "c/d")
    end)
 
+   it("can be concatenated to other paths", function ()
+      local foo = P "foo"
+      local bar = P "bar"
+      local foobar = foo .. bar
+      assert.equal(P, getmetatable(foobar))
+      assert.equal(P "foo/bar", foobar)
+      local foobarbaz = foo .. P "bar/baz"
+      assert.equal(P "foo/bar/baz", foobarbaz)
+   end)
+
+   it("can be concatenated to strings", function ()
+      local foo = P "foo"
+      local foobar = foo .. "bar"
+      assert.equal(P, getmetatable(foobar))
+      assert.equal(P "foo/bar", foobar)
+      local foobarbaz = foo .. "bar/baz"
+      assert.equal(P "foo/bar/baz", foobarbaz)
+   end)
+
+   it("can be concatenated to tables", function ()
+      local foo = P "foo"
+      local foobar = foo .. { "bar" }
+      assert.equal(P, getmetatable(foobar))
+      assert.equal(P "foo/bar", foobar)
+      local foobarbaz = foo .. { "bar", "baz" }
+      assert.equal(P "foo/bar/baz", foobarbaz)
+   end)
+
+   it("can be concatenated to stringizable values", function ()
+      local foo = P "foo"
+      local foo1 = foo .. 1
+      assert.equal(P, getmetatable(foo1))
+      assert.equal(P "foo/1", foo1)
+   end)
+
    describe(":child()", function ()
       it("creates new child paths", function ()
          local foo = P "foo"

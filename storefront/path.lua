@@ -21,7 +21,8 @@
 --     to ensure this).
 --
 
-local type, error, setmetatable, ipairs = type, error, setmetatable, ipairs
+local setmetatable, getmetatable = setmetatable, getmetatable
+local type, error, ipairs, tostring = type, error, ipairs, tostring
 local s_match, s_gmatch, s_format = string.match, string.gmatch, string.format
 local t_insert, t_concat = table.insert, table.concat
 
@@ -144,6 +145,33 @@ function path:sibling(component)
    check_path_component(component)
    local new_path, n = unsafe_copy(self)
    new_path[n] = component
+   return intern(new_path)
+end
+
+function path:__concat(other)
+   local new_path, n = unsafe_copy(self)
+   local other_type = type(other)
+   if other_type == "table" then
+      if getmetatable(other) == path then
+         -- No need to check components.
+         for i, component in ipairs(other) do
+            new_path[n + i] = component
+         end
+      else
+         -- Check path components.
+         for i, component in ipairs(other) do
+            new_path[n + i] = check_path_component(component)
+         end
+      end
+   elseif other_type == "string" then
+      -- Canonicalize the string into a new path.
+      for i, component in ipairs(canonicalize(other)) do
+         new_path[n + i] = component
+      end
+   else
+      -- Append the stringization of the value.
+      new_path[n + 1] = check_path_component(tostring(other))
+   end
    return intern(new_path)
 end
 
