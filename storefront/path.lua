@@ -176,4 +176,15 @@ function path:__concat(other)
 end
 
 
+function path.check(p, convert)
+   if getmetatable(p) == path then
+      return p
+   elseif convert then
+      return path(p)
+   else
+      error("argument is not a path object")
+   end
+end
+
+
 return path

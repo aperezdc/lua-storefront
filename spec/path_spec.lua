@@ -199,5 +199,34 @@ describe("storefront.path", function ()
          assert.equal(P "foo/foo", foofoo)
       end)
    end)
+
+   describe(".check", function ()
+      it("errors on non-path arguments", function ()
+         for _, value in ipairs {
+            { "foo", "bar" },
+            "string/value",
+            12321,
+            3.14,
+         } do
+            local m = "value <" .. tostring(value) .. "> type: " .. type(value)
+            assert.message(m).has_error(function () P.check(value) end)
+         end
+      end)
+
+      it("accepts and returns path arguments", function ()
+         for _, value in ipairs { P "foo/bar", P { "foo", "bar" } } do
+            assert.same(value, P.check(value))
+            assert.equal("foo/bar", value.string)
+         end
+      end)
+
+      it("coerces with convert=true", function ()
+         for _, value in ipairs { "foo/bar", { "foo", "bar" } } do
+            local path = P.check(value, true)
+            assert.equal(P, getmetatable(path))
+            assert.equal(P "foo/bar", path)
+         end
+      end)
+   end)
 end)
 
