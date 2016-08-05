@@ -124,6 +124,17 @@ describe("storefront.path", function ()
       assert.equal(P "foo/1", foo1)
    end)
 
+   it("cannot be mutated", function ()
+      assert.has_error(function ()
+         local foo = P "foo"
+         foo[#foo+1] = "bar"
+      end)
+      assert.has_error(function ()
+         local foo = P "foo"
+         foo.random_attribute = true
+      end)
+   end)
+
    describe(":child()", function ()
       it("creates new child paths", function ()
          local foo = P "foo"
