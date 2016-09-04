@@ -9,10 +9,7 @@ local keys = require "storefront.itertools" .keys
 local map = require "storefront.itertools" .map
 local base = require "storefront.base"
 local P = require "storefront.path"
-local check_path = P.check
-
-local query_iterable = base.query_iterable
-local co_wrap, co_yield = coroutine.wrap, coroutine.yield
+local check_path, query_iterable = P.check, base.query_iterable
 
 local _ENV = nil
 
