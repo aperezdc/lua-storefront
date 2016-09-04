@@ -152,12 +152,12 @@ describe("storefront.base.query_iterable", function ()
    local items = {
       "foo",
       "bar",
-      "foo.foo",
-      "foo.bar",
-      "bar.foo",
-      "bar.bar",
-      "foo.bar.baz",
-      "foo.baz.bar",
+      "foo/foo",
+      "foo/bar",
+      "bar/foo",
+      "bar/bar",
+      "foo/bar/baz",
+      "foo/baz/bar",
    }
 
    it("returns all items with '**'", function ()
@@ -175,13 +175,13 @@ describe("storefront.base.query_iterable", function ()
 
    it("does long-match prefix filtering", function ()
       local resultset = {
-         ["foo.foo"] = true,
-         ["foo.bar"] = true,
-         ["foo.bar.baz"] = true,
-         ["foo.baz.bar"] = true,
+         ["foo/foo"] = true,
+         ["foo/bar"] = true,
+         ["foo/bar/baz"] = true,
+         ["foo/baz/bar"] = true,
       }
       local count = 0
-      for item in base.query_iterable(iter.each(items), "foo.**") do
+      for item in base.query_iterable(iter.each(items), "foo/**") do
          assert.truthy(resultset[item])
          count = count + 1
       end
@@ -189,9 +189,9 @@ describe("storefront.base.query_iterable", function ()
    end)
 
    it("does short-match prefix filtering", function ()
-      local resultset = { ["foo.foo"] = true, ["foo.bar"] = true }
+      local resultset = { ["foo/foo"] = true, ["foo/bar"] = true }
       local count = 0
-      for item in base.query_iterable(iter.each(items), "foo.*") do
+      for item in base.query_iterable(iter.each(items), "foo/*") do
          assert.truthy(resultset[item])
          count = count + 1
       end
@@ -200,12 +200,12 @@ describe("storefront.base.query_iterable", function ()
 
    it("does long-match suffix filtering", function ()
       local resultset = {
-         ["foo.bar"] = true,
-         ["bar.bar"] = true,
-         ["foo.baz.bar"] = true,
+         ["foo/bar"] = true,
+         ["bar/bar"] = true,
+         ["foo/baz/bar"] = true,
       }
       local count = 0
-      for item in base.query_iterable(iter.each(items), "**.bar") do
+      for item in base.query_iterable(iter.each(items), "**/bar") do
          assert.truthy(resultset[item])
          count = count + 1
       end
@@ -213,9 +213,9 @@ describe("storefront.base.query_iterable", function ()
    end)
 
    it("does short-match suffix filtering", function ()
-      local resultset = { ["foo.bar"] = true, ["bar.bar"] = true }
+      local resultset = { ["foo/bar"] = true, ["bar/bar"] = true }
       local count = 0
-      for item in base.query_iterable(iter.each(items), "*.bar") do
+      for item in base.query_iterable(iter.each(items), "*/bar") do
          assert.truthy(resultset[item])
          count = count + 1
       end

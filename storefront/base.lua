@@ -7,7 +7,7 @@
 
 local error, xpcall, setmetatable, pairs = error, xpcall, setmetatable, pairs
 local assert, type, select, d_traceback = assert, type, select, debug.traceback
-local s_gsub, s_match = string.gsub, string.match
+local tostring, s_gsub, s_match = tostring, string.gsub, string.match
 local unpack = table.unpack or unpack
 
 local islice = require "storefront.itertools" .islice
@@ -120,11 +120,11 @@ end
 local function make_pattern_matcher (pattern)
    pattern = (s_gsub(pattern, "[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
    pattern = (s_gsub(pattern, "%%%*%%%*", ".*"))
-   pattern = (s_gsub(pattern, "%%%*", "[^%%.]*"))
+   pattern = (s_gsub(pattern, "%%%*", "[^/]*"))
    pattern = (s_gsub(pattern, "%%%?", "."))
    pattern = "^" .. pattern .. "$"
    return function (s)
-      return s_match(s, pattern) ~= nil
+      return s_match(tostring(s), pattern) ~= nil
    end
 end
 
