@@ -117,6 +117,63 @@ function base.store:query(pattern, limit, offset)
    error("store:query() unimplemented")
 end
 
+
+base.shim = base.store + "storefront.base.shim"
+
+function base.shim:__init(store)
+   base.store.__init(self)
+   self.child = store
+end
+
+function base.shim:__tostring()
+   return "<" .. self.__name .. " " .. tostring(self.child) .. ">"
+end
+
+function base.shim:get(...) return self.child:get(...) end
+function base.shim:set(...) return self.child:set(...) end
+function base.shim:del(...) return self.child:del(...) end
+function base.shim:has(...) return self.child:has(...) end
+function base.shim:query(...) return self.child:query(...) end
+
+
+base.cache = base.shim + "storefront.base.cache"
+
+function base.cache:__init(store, cache)
+   base.shim.__init(self, store)
+   self.cache = cache
+end
+
+function base.cache:__tostring()
+   return "<" .. self.__name .. " " .. tostring(self.child)
+       .. " cache=" .. tostring(self.cache) .. ">"
+end
+
+function base.cache:get(path)
+   local value = self.cache:get(path)
+   if value == nil then
+      value = self.child:get(path)
+      if value ~= nil then
+         self.cache:set(path, value)
+      end
+   end
+   return value
+end
+
+function base.cache:set(path, value)
+   self.cache:set(path, value)
+   self.child:set(path, value)
+end
+
+function base.cache:del(path)
+   self.cache:del(path)
+   self.child:del(path)
+end
+
+function base.cache:has(path)
+   return self.cache:has(path) or self.child:has(path)
+end
+
+
 local function make_pattern_matcher (pattern)
    pattern = (s_gsub(pattern, "[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
    pattern = (s_gsub(pattern, "%%%*%%%*", ".*"))
