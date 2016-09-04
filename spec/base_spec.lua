@@ -47,7 +47,7 @@ end)
 
 describe("storefront.base.store", function ()
    it("has basic store methods", function ()
-      storetest(base.store, true)
+      storetest.test_store_methods(base.store, true)
    end)
 
    it("can be subclassed", function ()
@@ -56,7 +56,7 @@ describe("storefront.base.store", function ()
       assert.not_same(derived_class, base.store)
       local instance = derived_class()
       assert.is_table(instance)
-      storetest(instance, true)
+      storetest.test_store_methods(instance, true)
       assert.not_equal(derived_class, instance)
    end)
 
