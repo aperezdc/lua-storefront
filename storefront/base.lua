@@ -7,7 +7,12 @@
 
 local error, xpcall, setmetatable, pairs = error, xpcall, setmetatable, pairs
 local assert, type, select, d_traceback = assert, type, select, debug.traceback
+local s_gsub, s_match = string.gsub, string.match
 local unpack = table.unpack or unpack
+
+local islice = require "storefront.itertools" .islice
+local sorted = require "storefront.itertools" .sorted
+local filter = require "storefront.itertools" .filter
 
 local _ENV = nil
 
@@ -110,6 +115,41 @@ end
 
 function base.store:query(pattern, limit, offset)
    error("store:query() unimplemented")
+end
+
+local function make_pattern_matcher (pattern)
+   pattern = (s_gsub(pattern, "[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
+   pattern = (s_gsub(pattern, "%%%*%%%*", ".*"))
+   pattern = (s_gsub(pattern, "%%%*", "[^%%.]*"))
+   pattern = (s_gsub(pattern, "%%%?", "."))
+   pattern = "^" .. pattern .. "$"
+   return function (s)
+      return s_match(s, pattern) ~= nil
+   end
+end
+
+function base.query_iterable(iterable, pattern, limit, offset)
+   -- TODO: Canonicalize pattern first.
+
+   -- Only apply the filtering when not iterating over all keys.
+   if pattern ~= "**" then
+      local matches_pattern = make_pattern_matcher(pattern)
+      iterable = filter(matches_pattern, iterable)
+   end
+
+   if offset == nil then
+      offset = 1
+   end
+
+   if limit == nil then
+      if offset > 1 then
+         iterable = islice(sorted(iterable), offset)
+      end
+   else
+      iterable = islice(sorted(iterable), offset, offset + limit - 1)
+   end
+
+   return iterable
 end
 
 

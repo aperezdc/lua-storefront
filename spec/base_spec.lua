@@ -7,6 +7,7 @@
 --
 
 local base = require "storefront.base"
+local iter = require "storefront.itertools"
 local storetest = require "spec.storetest"
 
 describe("storefront.base.class", function ()
@@ -143,5 +144,96 @@ describe("storefront.base.store", function ()
          store:transact(function () end)
          assert.spy(s).called_with(store, "transaction token")
       end)
+   end)
+end)
+
+describe("storefront.base.query_iterable", function ()
+
+   local items = {
+      "foo",
+      "bar",
+      "foo.foo",
+      "foo.bar",
+      "bar.foo",
+      "bar.bar",
+      "foo.bar.baz",
+      "foo.baz.bar",
+   }
+
+   it("returns all items with '**'", function ()
+      local result = {}
+      local count = 0
+      for r in base.query_iterable(iter.each(items), "**") do
+         result[r] = true
+         count = count + 1
+      end
+      for _, item in ipairs(items) do
+         assert.truthy(result[item])
+      end
+      assert.equal(#items, count)
+   end)
+
+   it("does long-match prefix filtering", function ()
+      local resultset = {
+         ["foo.foo"] = true,
+         ["foo.bar"] = true,
+         ["foo.bar.baz"] = true,
+         ["foo.baz.bar"] = true,
+      }
+      local count = 0
+      for item in base.query_iterable(iter.each(items), "foo.**") do
+         assert.truthy(resultset[item])
+         count = count + 1
+      end
+      assert.equal(4, count)
+   end)
+
+   it("does short-match prefix filtering", function ()
+      local resultset = { ["foo.foo"] = true, ["foo.bar"] = true }
+      local count = 0
+      for item in base.query_iterable(iter.each(items), "foo.*") do
+         assert.truthy(resultset[item])
+         count = count + 1
+      end
+      assert.equal(2, count)
+   end)
+
+   it("does long-match suffix filtering", function ()
+      local resultset = {
+         ["foo.bar"] = true,
+         ["bar.bar"] = true,
+         ["foo.baz.bar"] = true,
+      }
+      local count = 0
+      for item in base.query_iterable(iter.each(items), "**.bar") do
+         assert.truthy(resultset[item])
+         count = count + 1
+      end
+      assert.equal(3, count)
+   end)
+
+   it("does short-match suffix filtering", function ()
+      local resultset = { ["foo.bar"] = true, ["bar.bar"] = true }
+      local count = 0
+      for item in base.query_iterable(iter.each(items), "*.bar") do
+         assert.truthy(resultset[item])
+         count = count + 1
+      end
+      assert.equal(2, count)
+   end)
+
+   it("can paginate results", function ()
+      local s = iter.collect(iter.sorted(iter.each(items)))
+      local r = iter.collect(base.query_iterable(iter.each(items), "**", 2))
+      assert.equal(2, #r)
+      assert.equal(s[1], r[1])
+      assert.equal(s[2], r[2])
+      r = iter.collect(base.query_iterable(iter.each(items), "**", 2, 3))
+      assert.equal(2, #r)
+      assert.equal(s[3], r[1])
+      assert.equal(s[4], r[2])
+      -- Now get the rest of items
+      r = iter.collect(base.query_iterable(iter.each(items), "**", nil, 5))
+      assert.equal(#items - 4, #r)
    end)
 end)
