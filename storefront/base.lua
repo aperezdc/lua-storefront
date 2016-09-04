@@ -93,15 +93,15 @@ function base.store:transact(callable, ...)
 end
 
 function base.store:get(path)
-   error("unimplemented")
+   error("store:get() unimplemented")
 end
 
 function base.store:set(path, value)
-   error("unimplemented")
+   error("store:set() unimplemented")
 end
 
 function base.store:del(path)
-   error("unimplemented")
+   error("store:del() unimplemented")
 end
 
 function base.store:has(path)
@@ -109,7 +109,7 @@ function base.store:has(path)
 end
 
 function base.store:query(pattern, limit, offset)
-   error("unimplemented")
+   error("store:query() unimplemented")
 end
 
 
