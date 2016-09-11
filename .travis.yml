@@ -17,6 +17,7 @@ before_install:
   - lua -v
 
 install:
+  - luarocks install --only-deps $(find luarocks -name '*-scm-*.rockspec' | sort -g | tail -1)
   - luarocks install luacov-coveralls
   - luarocks install cluacov
   - luarocks install busted
