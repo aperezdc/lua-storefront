@@ -6,7 +6,7 @@
 --
 
 local base = require "storefront.base"
-local iter = require "storefront.itertools"
+local iter = require "itertools"
 local storetest = require "spec.storetest"
 
 describe("storefront.base.class", function ()

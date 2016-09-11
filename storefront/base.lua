@@ -10,9 +10,9 @@ local assert, type, select, d_traceback = assert, type, select, debug.traceback
 local tostring, s_gsub, s_match = tostring, string.gsub, string.match
 local unpack = table.unpack or unpack
 
-local islice = require "storefront.itertools" .islice
-local sorted = require "storefront.itertools" .sorted
-local filter = require "storefront.itertools" .filter
+local islice = require "itertools" .islice
+local sorted = require "itertools" .sorted
+local filter = require "itertools" .filter
 
 local _ENV = nil
 

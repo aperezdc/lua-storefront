@@ -5,8 +5,8 @@
 -- Distributed under terms of the MIT license.
 --
 
-local keys = require "storefront.itertools" .keys
-local map = require "storefront.itertools" .map
+local keys = require "itertools" .keys
+local map = require "itertools" .map
 local base = require "storefront.base"
 local P = require "storefront.path"
 local check_path, query_iterable = P.check, base.query_iterable
